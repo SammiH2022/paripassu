@@ -16,8 +16,9 @@ let landmarkCount = 0
 
 let gameState = {
 	points: 0,
-	timer: 3600,
+	timer: 5,
 	started: false,
+	finished: false,
 	captured: [],
 	messages: []
 }
@@ -85,7 +86,7 @@ let map = new InteractiveMap({
 		// -1 is not in any range
 
 		console.log("enter", landmark.name, newLevel)
-		if (newLevel == 2) {
+		if (newLevel == 2 && gameState.finished == false) {
 
 			// Add points to my gamestate
 			gameState.points += landmark.points
@@ -151,11 +152,17 @@ window.onload = (event) => {
 			<div id="main-columns">
 
 				<div class="main-column" style="flex:1;overflow:scroll;max-height:200px">
-					<p>Timer: {{gameState.timer}}</p>
-					<p>Points: {{gameState.points}}</p>
-					<p v-for="item in gameState.messages.slice(gameState.messages.length-1, gameState.messages.length)">{{item}}</p>
-					<button v-if="!gameState.started" @click="gameState.started = !gameState.started"> timer start </button>
-					
+					<div v-if="!gameState.finished" style="display:flex;flex-direction:column">
+						<p>Score: {{gameState.points}}</p>
+						<p>Timer (seconds left): {{gameState.timer}} </p>
+						<p v-for="item in gameState.messages.slice(gameState.messages.length-1, gameState.messages.length)"> {{item}} </p>
+						<button v-if="!gameState.started" @click="timerCount">Start Timer</button>
+					</div>
+					<div v-if="gameState.finished" style="display:flex;flex-direction:column">
+						<p>Congratulations! You finished with</p>
+						<h2> {{gameState.points}}</h2>
+						<p>points!</p>
+					</div>
 				</div>
 
 				<div class="main-column" style="overflow:hidden;width:${MAP_SIZE}px;height:${MAP_SIZE}px">
@@ -174,6 +181,24 @@ window.onload = (event) => {
 				gameState: gameState
 			}
 
+		},
+
+		methods: {
+			timerCount: function (event) {
+				console.log(gameState.started)
+				if (!gameState.started) {
+					if (gameState.timer > 0) {
+						gameState.started = true
+						setInterval(() => {
+							gameState.timer--;
+							if (gameState.timer == 0) {
+								gameState.started = false
+								gameState.finished = true
+							}
+						}, 1000);
+					}
+				}
+			}
 		},
 
 		// Get all of the intarsia components, plus various others
