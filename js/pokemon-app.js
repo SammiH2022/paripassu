@@ -16,6 +16,8 @@ let landmarkCount = 0
 
 let gameState = {
 	points: 0,
+	timer: 3600,
+	started: false,
 	captured: [],
 	messages: []
 }
@@ -88,7 +90,6 @@ let map = new InteractiveMap({
 			// Add points to my gamestate
 			gameState.points += landmark.points
 
-			
 
 			// Have we captured this?
 			if (!gameState.captured.includes(landmark.name)) {
@@ -150,8 +151,10 @@ window.onload = (event) => {
 			<div id="main-columns">
 
 				<div class="main-column" style="flex:1;overflow:scroll;max-height:200px">
-					(TODO, add your own gamestate)
-					{{gameState}}
+					<p>Timer: {{gameState.timer}}</p>
+					<p>Points: {{gameState.points}}</p>
+					<p v-for="item in gameState.messages.slice(gameState.messages.length-1, gameState.messages.length)">{{item}}</p>
+					<button v-if="!gameState.started" @click="gameState.started = !gameState.started"> timer start </button>
 					
 				</div>
 
@@ -170,6 +173,7 @@ window.onload = (event) => {
 				map: map,
 				gameState: gameState
 			}
+
 		},
 
 		// Get all of the intarsia components, plus various others
